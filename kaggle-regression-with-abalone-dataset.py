@@ -198,6 +198,9 @@ preprocess.fit(pd.concat([X_train, X_test]))
 
 X_train = pd.DataFrame(preprocess.transform(X_train))
 X_test = pd.DataFrame(preprocess.transform(X_test))
+# -
+
+X_train.head()
 
 # +
 cat_one_hot_cols = np.array(['Sex_F', 'Sex_I', 'Sex_M'])
@@ -219,7 +222,7 @@ import matplotlib.pyplot as plt
 # +
 corr = X_train.corr()
 
-plt.figure(figsize = (10, 10), dpi = 200)
+plt.figure(figsize = (10, 10), dpi = 100)
 sns.heatmap(corr, cmap = 'YlGnBu', fmt = '.2f', annot = True)
 plt.title('Correlation Heatmap')
 plt.show()
