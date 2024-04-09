@@ -109,10 +109,12 @@ from sklearn.metrics import mean_squared_log_error
 # +
 # Configuration
 COMPUTE_TEST_PRED = True
-USE_ORIGINAL_DATA = False
+USE_ORIGINAL_DATA = True
 
 # Containers for results
 oof, test_pred = {}, {}
+
+
 # -
 
 # # Reading the data
@@ -126,6 +128,11 @@ oof, test_pred = {}, {}
 # - As the target variable is integer, we can use it to cross-validate with a `StratifiedKFold`. The stratification gives a better cv–lb correlation than a simple `KFold`.
 # - With >90000 samples, the training dataset is too big for kernel-based regressors (e.g., `SVR`, `KernelRidge`, `GaussianProcessRegressor`).
 # - `Sex` is a categorical feature. For some models, we'll need to one-hot encode it, for other models it suffices to mark it as categorical.
+
+def add_features(df):
+  df['Height_Shell_weight'] = df['Height'] * df['Shell weight']
+  return df
+
 
 # +
 train = pd.read_csv('/kaggle/input/playground-series-s4e4/train.csv', index_col='id')
@@ -141,11 +148,8 @@ if not test.isna().any().any():
 
 print(f"Train shape: {train.shape}   test shape: {test.shape}")
 
-train['Height_Shell_weight'] = train['Height'] * train['Shell weight']
-test['Height_Shell_weight'] = test['Height'] * test['Shell weight']
-
-#train['Height_Shell_weight2'] = train['Height'] / train['Shell weight']
-#test['Height_Shell_weight2'] = test['Height'] / train['Shell weight']
+train = add_features(train)
+test = add_features(test)
 
 numeric_features = ['Length', 'Diameter', 'Height', 'Whole weight', 'Whole weight.1', 'Whole weight.2', 'Shell weight', 'Height_Shell_weight']
 numeric_vars = numeric_features + ['Rings']
@@ -172,6 +176,7 @@ if USE_ORIGINAL_DATA:
         'Viscera_weight' : 'Whole weight.2',
         'Shell_weight' : 'Shell weight'
     }, axis = 1)
+    original_dataset = add_features(original_dataset)
     original_dataset['Sex'] = original_dataset.Sex.astype(train.Sex.dtype)
     print("Original dataset shape:", original_dataset.shape)
 
